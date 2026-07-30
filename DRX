@@ -468,4 +468,4 @@
 </html>
 ```
 
-Just remember: the page expects an `assets/` folder next to `index.html` with `drx-coin.png` in it (the coin logo you uploaded) — otherwise the images in the nav bar and hero will show broken-image icons.
+
