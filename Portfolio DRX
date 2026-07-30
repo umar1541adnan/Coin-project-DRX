@@ -1,0 +1,471 @@
+Here's the full code — copy this straight into a file named `index.html`:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DRX Trading Coin — Digital Asset Portfolio</title>
+<meta name="description" content="DRX Trading Coin: a conceptual digital asset portfolio built as a school assignment exploring token design, tokenomics, and market influence.">
+<link rel="icon" href="assets/drx-coin.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-950:#050b16;
+    --navy-900:#0a1730;
+    --navy-850:#0d1c3c;
+    --navy-800:#132548;
+    --blue-500:#2e6be0;
+    --blue-400:#4f86f0;
+    --green-400:#33d17a;
+    --green-300:#6ee6a4;
+    --silver-100:#edf1f7;
+    --slate-400:#8aa0c4;
+    --slate-500:#6a80a4;
+    --line:rgba(237,241,247,0.09);
+    --radius:14px;
+    --maxw:1180px;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--navy-950);
+    color:var(--silver-100);
+    font-family:'Inter',system-ui,sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    letter-spacing:-0.01em;
+    margin:0;
+  }
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  a{color:inherit;}
+  img{max-width:100%;display:block;}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px;}
+  section{position:relative;}
+
+  a:focus-visible,button:focus-visible{
+    outline:2px solid var(--green-400);
+    outline-offset:3px;
+    border-radius:4px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; scroll-behavior:auto !important;}
+  }
+
+  /* ---------- Ticker bar ---------- */
+  .ticker-bar{
+    background:var(--navy-900);
+    border-bottom:1px solid var(--line);
+    overflow:hidden;
+    white-space:nowrap;
+    padding:9px 0;
+  }
+  .ticker-track{
+    display:inline-flex;
+    gap:48px;
+    animation:scroll-left 32s linear infinite;
+    padding-left:100%;
+  }
+  .ticker-track span{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    color:var(--slate-400);
+    letter-spacing:0.02em;
+  }
+  .ticker-track span.up{color:var(--green-400);}
+  @keyframes scroll-left{
+    from{transform:translateX(0);}
+    to{transform:translateX(-100%);}
+  }
+
+  /* ---------- Nav ---------- */
+  header.site-nav{
+    position:sticky;top:0;z-index:50;
+    background:rgba(5,11,22,0.86);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-row{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:16px 28px;max-width:var(--maxw);margin:0 auto;
+  }
+  .brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:17px;}
+  .brand img{width:32px;height:32px;border-radius:50%;}
+  nav.links{display:flex;gap:28px;font-size:14px;color:var(--slate-400);}
+  nav.links a{text-decoration:none;transition:color .2s;}
+  nav.links a:hover{color:var(--silver-100);}
+  @media (max-width:720px){ nav.links{display:none;} }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    padding:96px 0 64px;
+    background:
+      radial-gradient(ellipse 900px 500px at 78% 8%, rgba(46,107,224,0.35), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 10% 90%, rgba(51,209,122,0.10), transparent 60%),
+      var(--navy-950);
+    overflow:hidden;
+    position:relative;
+  }
+  .hero-grid{
+    display:grid;grid-template-columns:1.15fr 0.85fr;gap:56px;align-items:center;
+  }
+  @media (max-width:900px){ .hero-grid{grid-template-columns:1fr;} }
+
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--green-300);
+    background:rgba(51,209,122,0.08);border:1px solid rgba(51,209,122,0.25);
+    padding:6px 14px;border-radius:999px;margin-bottom:22px;
+  }
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--green-400);box-shadow:0 0 0 4px rgba(51,209,122,0.15);}
+
+  .hero h1{font-size:clamp(38px,6vw,64px);line-height:1.02;}
+  .hero h1 .accent{color:var(--green-400);}
+  .hero p.lede{font-size:18px;color:var(--slate-400);max-width:520px;margin-top:22px;}
+
+  .hero-cta{display:flex;gap:14px;margin-top:34px;flex-wrap:wrap;}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:13px 24px;border-radius:10px;font-weight:600;font-size:14.5px;
+    text-decoration:none;border:1px solid transparent;transition:transform .15s ease, background .2s;
+  }
+  .btn-primary{background:var(--green-400);color:#04150c;}
+  .btn-primary:hover{transform:translateY(-2px);background:var(--green-300);}
+  .btn-ghost{border-color:var(--line);color:var(--silver-100);}
+  .btn-ghost:hover{background:var(--navy-900);}
+
+  .hero-stats{display:flex;gap:32px;margin-top:44px;flex-wrap:wrap;}
+  .hero-stats div{border-left:2px solid var(--line);padding-left:14px;}
+  .hero-stats .num{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:600;}
+  .hero-stats .lbl{font-size:12.5px;color:var(--slate-400);margin-top:2px;}
+
+  .coin-stage{position:relative;display:flex;align-items:center;justify-content:center;}
+  .coin-stage img{
+    width:100%;max-width:420px;
+    filter:drop-shadow(0 30px 60px rgba(0,0,0,0.55));
+    animation:float 6s ease-in-out infinite;
+  }
+  @keyframes float{
+    0%,100%{transform:translateY(0px);}
+    50%{transform:translateY(-14px);}
+  }
+  .coin-stage::before{
+    content:"";position:absolute;width:380px;height:380px;border-radius:50%;
+    background:radial-gradient(circle, rgba(46,107,224,0.35), transparent 70%);
+    filter:blur(10px);
+  }
+
+  /* ---------- Chart signature strip ---------- */
+  .chart-strip{
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+    background:var(--navy-900);
+    padding:0;
+  }
+  .chart-strip svg{display:block;width:100%;height:140px;}
+
+  /* ---------- Section shells ---------- */
+  .section{padding:96px 0;}
+  .section.alt{background:var(--navy-900);}
+  .section-head{max-width:640px;margin-bottom:52px;}
+  .kicker{
+    font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--blue-400);
+    text-transform:uppercase;letter-spacing:0.12em;margin-bottom:12px;display:block;
+  }
+  .section h2{font-size:clamp(28px,4vw,40px);}
+  .section-head p{color:var(--slate-400);margin-top:14px;font-size:16px;}
+
+  /* ---------- About grid ---------- */
+  .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;}
+  @media (max-width:800px){ .about-grid{grid-template-columns:1fr;} }
+  .about-grid .lead-text{font-size:17px;color:var(--slate-400);}
+  .about-grid .lead-text strong{color:var(--silver-100);}
+  .fact-list{list-style:none;margin:26px 0 0;padding:0;display:grid;gap:14px;}
+  .fact-list li{
+    display:flex;gap:12px;padding:14px 16px;background:var(--navy-850,var(--navy-900));
+    border:1px solid var(--line);border-radius:10px;font-size:14.5px;
+  }
+  .fact-list li b{color:var(--green-300);font-family:'IBM Plex Mono',monospace;min-width:64px;}
+
+  /* ---------- Tokenomics ---------- */
+  .token-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+  @media (max-width:900px){ .token-grid{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:520px){ .token-grid{grid-template-columns:1fr;} }
+  .token-card{
+    background:var(--navy-950);border:1px solid var(--line);border-radius:var(--radius);
+    padding:26px 22px;transition:border-color .2s, transform .2s;
+  }
+  .token-card:hover{border-color:rgba(51,209,122,0.4);transform:translateY(-4px);}
+  .token-card .pct{font-family:'IBM Plex Mono',monospace;font-size:30px;font-weight:600;color:var(--green-400);}
+  .token-card h3{font-size:15.5px;margin-top:10px;}
+  .token-card p{font-size:13.5px;color:var(--slate-400);margin-top:6px;}
+
+  .allocation-bar{
+    display:flex;width:100%;height:14px;border-radius:8px;overflow:hidden;margin-top:40px;border:1px solid var(--line);
+  }
+  .allocation-bar span{height:100%;}
+
+  /* ---------- Market influence ---------- */
+  .influence-grid{display:grid;grid-template-columns:1fr 1fr;gap:30px;}
+  @media (max-width:800px){ .influence-grid{grid-template-columns:1fr;} }
+  .influence-card{
+    background:var(--navy-900);border:1px solid var(--line);border-radius:var(--radius);
+    padding:30px;
+  }
+  .influence-card .idx{font-family:'IBM Plex Mono',monospace;color:var(--blue-400);font-size:13px;margin-bottom:10px;display:block;}
+  .influence-card h3{font-size:19px;margin-bottom:10px;}
+  .influence-card p{color:var(--slate-400);font-size:14.5px;}
+
+  /* ---------- Roadmap timeline ---------- */
+  .timeline{position:relative;margin-top:20px;padding-left:34px;}
+  .timeline::before{
+    content:"";position:absolute;left:9px;top:6px;bottom:6px;width:2px;
+    background:linear-gradient(var(--blue-500),var(--green-400));
+  }
+  .t-item{position:relative;padding-bottom:44px;}
+  .t-item:last-child{padding-bottom:0;}
+  .t-item::before{
+    content:"";position:absolute;left:-34px;top:2px;width:20px;height:20px;border-radius:50%;
+    background:var(--navy-950);border:2px solid var(--green-400);
+  }
+  .t-item .yr{font-family:'IBM Plex Mono',monospace;color:var(--green-300);font-size:14px;font-weight:600;}
+  .t-item h3{font-size:18px;margin-top:6px;}
+  .t-item p{color:var(--slate-400);font-size:14.5px;margin-top:6px;max-width:560px;}
+
+  /* ---------- Disclaimer ---------- */
+  .disclaimer{
+    background:var(--navy-900);border:1px solid var(--line);border-radius:var(--radius);
+    padding:24px 28px;font-size:13.5px;color:var(--slate-400);
+  }
+  .disclaimer strong{color:var(--silver-100);}
+
+  /* ---------- Footer ---------- */
+  footer{border-top:1px solid var(--line);padding:44px 0;background:var(--navy-950);}
+  .footer-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;font-size:13.5px;color:var(--slate-400);}
+  .footer-row .brand{color:var(--silver-100);}
+</style>
+</head>
+<body>
+
+<div class="ticker-bar" aria-hidden="true">
+  <div class="ticker-track">
+    <span class="up">DRX ▲ concept token</span>
+    <span>School Project · Not a real asset</span>
+    <span class="up">Supply 250,000,000 DRX</span>
+    <span>Whitepaper draft v1.0</span>
+    <span class="up">Launch target 2027</span>
+    <span>Educational case study</span>
+    <span class="up">DRX ▲ concept token</span>
+    <span>School Project · Not a real asset</span>
+    <span class="up">Supply 250,000,000 DRX</span>
+    <span>Whitepaper draft v1.0</span>
+    <span class="up">Launch target 2027</span>
+    <span>Educational case study</span>
+  </div>
+</div>
+
+<header class="site-nav">
+  <div class="nav-row">
+    <div class="brand"><img src="assets/drx-coin.png" alt=""> DRX Trading Coin</div>
+    <nav class="links">
+      <a href="#about">About</a>
+      <a href="#tokenomics">Tokenomics</a>
+      <a href="#influence">Market Thesis</a>
+      <a href="#roadmap">Roadmap</a>
+      <a href="#disclaimer">Disclosure</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow"><span class="dot"></span> CONCEPT DIGITAL ASSET · CLASS PORTFOLIO PROJECT</span>
+      <h1>Introducing <span class="accent">DRX</span>,<br>a coin designed<br>around momentum.</h1>
+      <p class="lede">DRX Trading Coin is a fictional digital currency I designed and researched for a school assignment on blockchain economics — covering brand identity, tokenomics, and how a new asset could theoretically influence trading markets.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#tokenomics">View tokenomics</a>
+        <a class="btn btn-ghost" href="#roadmap">See the roadmap</a>
+      </div>
+      <div class="hero-stats">
+        <div><div class="num">250M</div><div class="lbl">Total supply (DRX)</div></div>
+        <div><div class="num">2027</div><div class="lbl">Target launch year</div></div>
+        <div><div class="num">4</div><div class="lbl">Allocation pools</div></div>
+      </div>
+    </div>
+    <div class="coin-stage">
+      <img src="assets/drx-coin.png" alt="DRX Trading Coin logo — a navy blue coin with a rising green arrow chart">
+    </div>
+  </div>
+</section>
+
+<div class="chart-strip" aria-hidden="true">
+  <svg viewBox="0 0 1200 140" preserveAspectRatio="none">
+    <polyline points="0,110 60,95 120,100 180,70 240,80 300,55 360,65 420,40 480,50 540,30 600,42 660,20 720,32 780,15 840,25 900,10 960,20 1020,8 1080,18 1140,6 1200,14"
+      fill="none" stroke="#33d17a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>
+    <g stroke="#2e6be0" stroke-width="6" opacity="0.5">
+      <line x1="90" y1="112" x2="90" y2="128"/>
+      <line x1="210" y1="88" x2="210" y2="108"/>
+      <line x1="330" y1="70" x2="330" y2="90"/>
+      <line x1="450" y1="55" x2="450" y2="75"/>
+      <line x1="570" y1="46" x2="570" y2="66"/>
+      <line x1="690" y1="34" x2="690" y2="54"/>
+      <line x1="810" y1="28" x2="810" y2="46"/>
+      <line x1="930" y1="22" x2="930" y2="40"/>
+      <line x1="1050" y1="18" x2="1050" y2="34"/>
+    </g>
+  </svg>
+</div>
+
+<section class="section" id="about">
+  <div class="wrap about-grid">
+    <div>
+      <span class="kicker">01 — About the project</span>
+      <h2>What is DRX, and why I built it</h2>
+      <p class="lede" style="margin-top:16px;">A brand study in what makes a digital asset feel trustworthy.</p>
+    </div>
+    <div>
+      <p class="lead-text">DRX Trading Coin is a <strong>conceptual cryptocurrency brand</strong> created for a school portfolio assignment. The goal was to design a coin identity from the ground up — logo, color language, supply model, and a public-facing case for why a token like DRX might matter to traders — the same way a real project would pitch itself to investors.</p>
+      <ul class="fact-list">
+        <li><b>Ticker</b> DRX</li>
+        <li><b>Category</b> Utility / trading-focused concept token</li>
+        <li><b>Status</b> Design & research phase, targeting a 2027 launch</li>
+        <li><b>Scope</b> Brand identity, tokenomics model, market positioning</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="section alt" id="tokenomics">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="kicker">02 — Tokenomics</span>
+      <h2>How the 250M DRX supply is modeled</h2>
+      <p>A fixed, non-inflationary supply split across four pools designed to balance early liquidity, long-term growth, and community access.</p>
+    </div>
+
+    <div class="token-grid">
+      <div class="token-card">
+        <div class="pct">40%</div>
+        <h3>Public & exchange liquidity</h3>
+        <p>100,000,000 DRX reserved to seed trading pairs and market depth at launch.</p>
+      </div>
+      <div class="token-card">
+        <div class="pct">25%</div>
+        <h3>Ecosystem & partnerships</h3>
+        <p>62,500,000 DRX allocated to integrations, grants, and platform incentives.</p>
+      </div>
+      <div class="token-card">
+        <div class="pct">20%</div>
+        <h3>Founding team</h3>
+        <p>50,000,000 DRX under a multi-year vesting schedule to align long-term incentives.</p>
+      </div>
+      <div class="token-card">
+        <div class="pct">15%</div>
+        <h3>Community treasury</h3>
+        <p>37,500,000 DRX reserved for holder governance proposals and rewards.</p>
+      </div>
+    </div>
+
+    <div class="allocation-bar" role="img" aria-label="Allocation bar: 40 percent liquidity, 25 percent ecosystem, 20 percent team, 15 percent community">
+      <span style="width:40%;background:#33d17a;"></span>
+      <span style="width:25%;background:#4f86f0;"></span>
+      <span style="width:20%;background:#2e6be0;"></span>
+      <span style="width:15%;background:#6a80a4;"></span>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="influence">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="kicker">03 — Market thesis</span>
+      <h2>The case for DRX's influence on the market</h2>
+      <p>Four ideas explored in my research on how a token like DRX could theoretically shape trading behavior — presented here as an academic thesis, not a financial claim.</p>
+    </div>
+    <div class="influence-grid">
+      <div class="influence-card">
+        <span class="idx">01 / Liquidity signaling</span>
+        <h3>Deep pools build trust</h3>
+        <p>Allocating 40% of supply to liquidity pools was modeled to reduce slippage and price volatility, a factor researchers link to healthier retail participation.</p>
+      </div>
+      <div class="influence-card">
+        <span class="idx">02 / Fixed supply narrative</span>
+        <h3>Scarcity as a design choice</h3>
+        <p>DRX's capped 250M supply mirrors the scarcity mechanics used by assets like Bitcoin, explored here as a case study in tokenized scarcity psychology.</p>
+      </div>
+      <div class="influence-card">
+        <span class="idx">03 / Governance access</span>
+        <h3>Community treasury</h3>
+        <p>The 15% community pool models how holder-driven proposals could decentralize decision-making rather than concentrating it with founders.</p>
+      </div>
+      <div class="influence-card">
+        <span class="idx">04 / Vesting discipline</span>
+        <h3>Aligned incentives</h3>
+        <p>Multi-year team vesting is a common real-world mechanism studied here to show how it discourages early sell-offs that can destabilize new markets.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section alt" id="roadmap">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="kicker">04 — Roadmap</span>
+      <h2>Path to the 2027 launch</h2>
+      <p>The project's planned phases, from brand concept to a simulated market debut.</p>
+    </div>
+    <div class="timeline">
+      <div class="t-item">
+        <div class="yr">2025</div>
+        <h3>Brand & concept design</h3>
+        <p>Logo, visual identity, and the DRX name finalized; initial whitepaper draft written for this portfolio.</p>
+      </div>
+      <div class="t-item">
+        <div class="yr">2026</div>
+        <h3>Tokenomics & research</h3>
+        <p>Supply model, allocation structure, and market-influence thesis researched and documented.</p>
+      </div>
+      <div class="t-item">
+        <div class="yr">2027 · Q1</div>
+        <h3>Simulated exchange listing</h3>
+        <p>Concept listing mock-ups and trading-pair simulations built to demonstrate how DRX would appear to investors.</p>
+      </div>
+      <div class="t-item">
+        <div class="yr">2027 · Q3</div>
+        <h3>Case study publication</h3>
+        <p>Final portfolio write-up published, reflecting on what the project taught me about token design and market mechanics.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="disclaimer">
+  <div class="wrap">
+    <div class="disclaimer">
+      <strong>Academic disclosure:</strong> DRX Trading Coin is a fictional brand created solely for a school portfolio assignment. It is not a real cryptocurrency, is not listed on any exchange, and is not being offered for sale or investment. Nothing on this page is financial advice.
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap footer-row">
+    <div><span class="brand">DRX Trading Coin</span> — a class portfolio project</div>
+    <div>Built with HTML, CSS &amp; SVG · Hosted on GitHub Pages</div>
+  </div>
+</footer>
+
+</body>
+</html>
+```
+
+Just remember: the page expects an `assets/` folder next to `index.html` with `drx-coin.png` in it (the coin logo you uploaded) — otherwise the images in the nav bar and hero will show broken-image icons.
